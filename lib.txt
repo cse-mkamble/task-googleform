@@ -12,3 +12,4 @@ npm install multer-gridfs-storage --save
 
 npm install node-dev --save-dev
 npm install --save-dev nodemon
+npm install --save-dev concurrently
