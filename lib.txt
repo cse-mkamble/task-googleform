@@ -1,0 +1,14 @@
+npm install body-parser --save
+npm install cors --save
+npm install dotenv --save
+npm install express --save
+npm install gridfs-stream --save
+npm install jsonwebtoken --save
+npm install jwt-decode --save
+npm install mongoose --save
+npm install mongoose-paginate-v2 --save
+npm install multer --save
+npm install multer-gridfs-storage --save
+
+npm install node-dev --save-dev
+npm install --save-dev nodemon
