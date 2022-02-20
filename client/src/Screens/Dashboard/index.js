@@ -5,6 +5,7 @@ import { Box, AppBar, Toolbar, IconButton, Typography, InputBase, MenuItem, Menu
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import authAction from '../../Redux/actions/authAction';
 
 const Title = styled(Typography)(({ theme }) => ({
     display: 'none',
@@ -146,7 +147,7 @@ export default function Dashboard() {
     const logout = () => {
         var logoutConfirmation = window.confirm("Really want to logout?");
         if (logoutConfirmation) {
-            // auth.logout();
+            authAction.logout();
             history.push("/login");
         }
     }

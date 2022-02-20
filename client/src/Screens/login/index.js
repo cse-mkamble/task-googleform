@@ -2,21 +2,20 @@ import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core';
 import {
+    Box,
     AppBar,
     Button,
     CssBaseline,
     Grid,
+    TextField,
     Toolbar,
     Typography,
     Avatar
 } from '@mui/material';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
-import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import GoogleButton from 'react-google-button';
+
 
 import authAction from '../../Redux/actions/authAction';
-
-const CLIENT_ID = '798003545648-sd4asfja34bs1jsionjgoju776lki3pk.apps.googleusercontent.com';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -39,13 +38,42 @@ export default function Login(props) {
     const [isLogined, setIsLogined] = useState(false);
     const { from } = props.location.state || { from: { pathname: '/' } }
 
+    const initialState = { name: '', email: '', };
+    const [userData, setUserData] = useState(initialState);
+    const { name, email } = userData;
+
     useEffect(() => {
         setIsLogined(authAction.isAuthenticated())
     }, []);
 
-    const loginGoogle = (response) => {
-        console.log(response);
-        authAction.loginWithGoogle(response)
+    const loginAsGuest = () => {
+        authAction.loginAsGuest()
+        history.push(from.pathname);
+    }
+
+
+    const handleLoginFailure = (response) => {
+        console.log('Failed to log in');
+    }
+
+    const handleLogoutFailure = (response) => {
+        console.log('Failed to log out');
+    }
+
+    const logout = (response) => {
+        authAction.logout();
+        setIsLogined(false);
+    }
+
+
+    const handleChangeInput = e => {
+        const { name, value } = e.target;
+        setUserData({ ...userData, [name]: value });
+    }
+
+    const handleSubmitLogin = (e) => {
+        e.preventDefault();
+        authAction.loginWithGoogle(userData)
             .then(() => {
                 console.log(from.pathname);
 
@@ -67,25 +95,6 @@ export default function Login(props) {
             );
     }
 
-    const loginAsGuest = () => {
-        authAction.loginAsGuest()
-        history.push(from.pathname);
-    }
-
-
-    const handleLoginFailure = (response) => {
-        console.log('Failed to log in');
-    }
-
-    const handleLogoutFailure = (response) => {
-        console.log('Failed to log out');
-    }
-
-    const logout = (response) => {
-        authAction.logout();
-        setIsLogined(false);
-    }
-
     return (<div>
         <CssBaseline />
         <div style={{ display: 'flex', flexGrow: 1, textAlign: 'start' }}>
@@ -100,22 +109,46 @@ export default function Login(props) {
         <main>
             <Typography component="h1" variant="h5" textAlign="center" >Login</Typography>
             <br></br>
-            <br></br>
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                {isLogined ?
-                    "" :
-                    <GoogleLogin
-                        clientId={CLIENT_ID}
-                        render={renderProps => (
-                            <GoogleButton onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ textAlign: 'center', alignSelf: 'center' }} />
-                        )}
-                        buttonText='Login'
-                        onSuccess={loginGoogle}
-                        onFailure={handleLoginFailure}
-                        cookiePolicy={'single_host_origin'}
-                        responseType='code,token'
-                    />
-                }
+                {isLogined ? "" : <div>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Box component="form" onSubmit={handleSubmitLogin} noValidate sx={{ mt: 1, maxWidth: '300px' }}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="name"
+                                label="name"
+                                name="name"
+                                autoComplete="name"
+                                onChange={handleChangeInput}
+                                value={userData.name}
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                onChange={handleChangeInput}
+                                value={userData.email}
+                            />
+
+
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 1, mb: 1 }}
+                                disabled={userData.name && userData.email ? false : true}
+                            >
+                                submit
+                            </Button>
+                        </Box>
+                    </Box>
+                </div>}
                 <br></br>
                 <br></br>
                 <div style={{ textAlign: 'center' }} >

@@ -27,9 +27,9 @@ export default {
 
     loginWithGoogle(res) {
         var data = {
-            name: res.profileObj.name,
-            email: res.profileObj.email,
-            image: res.profileObj.imageUrl
+            name: res.name,
+            email: res.email,
+            image: res.imageUrl
         }
 
         return axios
