@@ -3,8 +3,8 @@ npm install cors --save
 npm install dotenv --save
 npm install express --save
 npm install gridfs-stream --save
-npm install jsonwebtoken --save
-npm install jwt-decode --save
+npm install jsonwebtoken
+npm install jwt-decode 
 npm install mongoose --save
 npm install mongoose-paginate-v2 --save
 npm install multer --save

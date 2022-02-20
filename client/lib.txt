@@ -1,18 +1,18 @@
 npm install --save react react-dom react-scripts
 npm install --save react-router-dom@5.2.0
+npm install --save redux react-redux redux-thunk redux-devtools-extension
 
 # Install MUI, the world's most popular React UI framework.
-npm install @mui/material @emotion/react @emotion/styled
+npm install @mui/material@5.3.0 @emotion/react@11.7.1 @emotion/styled@11.6.0
 npm install @mui/material @mui/styled-engine-sc styled-components
 npm install @mui/icons-material
 npm install --save @material-ui/core
+npm install --save @material-ui/icons@^4.9.1
 
 npm install --save axios
 
-npm install jsonwebtoken --save
-npm install jwt-decode --save
-npm install moment --save
+npm install moment@2.27.0 --save
 npm install react-beautiful-dnd --save
 npm install react-google-button --save
-npm install react-google-login --save
+npm install react-google-login@5.1.21 --save
 npm install react-moment --save
