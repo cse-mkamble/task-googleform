@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux';
 import Dashboard from "../Dashboard";
 import LandingPage from "../LandingPage";
+import authAction from '../../Redux/actions/authAction'
 
 export default function Home() {
-    const { auth } = useSelector(state => state);
-    return (auth.token ? <Dashboard /> : <LandingPage />);
+    const isAuthenticated = authAction.isAuthenticated();
+    return (isAuthenticated ? <Dashboard /> : <LandingPage />);
 }

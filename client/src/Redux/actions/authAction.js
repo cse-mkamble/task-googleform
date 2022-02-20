@@ -1,192 +1,72 @@
-import { GLOBALTYPES } from './globalTypes'
-import { postDataAPI } from '../../utils/fetchData'
-import valid from '../../utils/valid'
-import validator from 'validator';
+import axios from 'axios';
+const API_URL = "http://localhost:5000/api/user";
 
-export const login = (data) => async (dispatch) => {
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } })
-        const res = await postDataAPI('login', data)
-        dispatch({
-            type: GLOBALTYPES.AUTH,
-            payload: {
-                token: res.data.access_token,
-                user: res.data.user
-            }
-        })
-
-        localStorage.setItem("firstLogin", true)
-        dispatch({
-            type: GLOBALTYPES.ALERT,
-            payload: {
-                success: res.data.msg
-            }
-        })
-
-    } catch (err) {
-        dispatch({
-            type: GLOBALTYPES.ALERT,
-            payload: {
-                error: err.response.data.msg
-            }
-        })
-    }
-}
-
-
-export const refreshToken = () => async (dispatch) => {
-    const firstLogin = localStorage.getItem("firstLogin")
-    if (firstLogin) {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } })
-
-        try {
-            const res = await postDataAPI('refresh_token')
-            dispatch({
-                type: GLOBALTYPES.AUTH,
-                payload: {
-                    token: res.data.access_token,
-                    user: res.data.user
-                }
-            })
-
-            dispatch({ type: GLOBALTYPES.ALERT, payload: {} })
-
-        } catch (err) {
-            dispatch({
-                type: GLOBALTYPES.ALERT,
-                payload: {
-                    error: err.response.data.msg
-                }
-            })
+export default {
+    isAuthenticated() {
+        const token = localStorage.getItem('userTicket')
+        if (token) {
+            return true
+        } else {
+            return false
         }
-    }
-}
+    },
 
-export const registerSendMail = (data) => async (dispatch) => {
-    const check = valid(data);
-    if (check.errLength > 0) {
-        return dispatch({ type: GLOBALTYPES.ALERT, payload: check.errMsg })
-    }
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } })
-        const res = await postDataAPI('registersendmail', data)
-        dispatch({
-            type: GLOBALTYPES.ALERT,
-            payload: {
-                success: res.data.msg
-            }
-        })
-    } catch (err) {
-        dispatch({
-            type: GLOBALTYPES.ALERT,
-            payload: {
-                error: err.response.data.msg
-            }
-        });
-    }
-}
+    getGuestUser() {
+        return { name: "Guest 123", userId: "guest123", email: "coolboy69@gg.com" }
+    },
 
-export const register = (data) => async (dispatch) => {
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-        const res = await postDataAPI('register', data);
-        dispatch({ type: GLOBALTYPES.AUTH, payload: { token: res.data.access_token, user: res.data.user } });
-        localStorage.setItem("firstLogin", true);
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
-    } catch (err) {
-        dispatch({
-            type: GLOBALTYPES.ALERT,
-            payload: {
-                error: err.response.data.msg
-            }
-        })
-    }
-}
+    authenticate(cb) {
+        this.isAuthenticated = true;
+        setTimeout(cb, 100); // fake async
+    },
 
-export const forgotPassOTPSendMail = (data) => async (dispatch) => {
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-        const res = await postDataAPI('forgotsendmail', data);
-        dispatch({ type: GLOBALTYPES.FSPASS, payload: { success: true } });
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
-    } catch (err) {
-        dispatch({ type: GLOBALTYPES.FSPASS, payload: { success: false } });
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err.response.data.msg } });
-    }
-}
+    signout(cb) {
+        this.isAuthenticated = false;
+        setTimeout(cb, 100);
+    },
 
-export const forgotPassOTPVerify = (data) => async (dispatch) => {
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-        const res = await postDataAPI('forgototpverify', data);
-        dispatch({ type: GLOBALTYPES.FVPASS, payload: { otpVeriySuccess: true } });
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
-    } catch (err) {
-        dispatch({ type: GLOBALTYPES.FVPASS, payload: { otpVeriySuccess: false } });
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err.response.data.msg } });
-    }
-}
+    loginWithGoogle(res) {
+        var data = {
+            name: res.profileObj.name,
+            email: res.profileObj.email,
+            image: res.profileObj.imageUrl
+        }
 
-export const resetPassword = (data) => async (dispatch) => {
-    const { newPassword, new_cf_password } = data;
-    const errMsg = {};
+        return axios
+            .post(`${API_URL}/login`, data)
+            .then(response => {
+                console.log(response.data);
+                if (response.data.accessToken) {
+                    localStorage.setItem("userTicket", JSON.stringify(response.data.accessToken));
+                }
+                return response.data;
+            });
+    },
 
-    if (!newPassword) {
-        errMsg.newPassword = "Please add your password."
-    } else if (!validator.isStrongPassword(newPassword, {
-        minLength: 8, minLowercase: 1,
-        minUppercase: 1, minNumbers: 1, minSymbols: 1
-    })) {
-        errMsg.newPassword = "Please choose a stronger password. Try a mix of letters, numbers and symbols."
-    }
+    loginAsGuest() {
+        var userData = {
+            name: "Cool Guest",
+            id: "y2jsdqakq9rqyvtd4gf6g",
+            email: "coolboy69@gg.com"
+        }
 
-    if (!new_cf_password) {
-        errMsg.new_cf_password = "Please enter confirm password."
-    }
+        return axios
+            .post(`${API_URL}/login`, userData)
+            .then(response => {
+                console.log(response.data);
+                if (response.data.accessToken) {
+                    localStorage.setItem("userTicket", JSON.stringify(response.data.accessToken));
+                }
+                return response.data;
+            });
+    },
 
-    if (newPassword !== new_cf_password) {
-        errMsg.new_cf_password = "Confirm password did not match."
-    }
 
-    const errLength = Object.keys(errMsg).length;
+    logout() {
+        localStorage.removeItem("userTicket");
+    },
 
-    if (errLength > 0) {
-        return dispatch({ type: GLOBALTYPES.ALERT, payload: errMsg })
-    }
-
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
-        const res = await postDataAPI('reset', data);
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } });
-        window.location.href = "/"
-    } catch (error) {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { error: error.response.data.msg } });
-    }
-}
-
-export const activationEmail = (activation_token) => async (dispatch) => {
-    try {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } })
-        const res = await postDataAPI('activation', { activation_token })
-        dispatch({ type: GLOBALTYPES.AUTH, payload: { token: res.data.access_token, user: res.data.user } })
-        localStorage.setItem("firstLogin", true)
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { success: res.data.msg } })
-    } catch (err) {
-        dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err.response.data.msg } })
-    }
-}
-
-export const logout = () => async (dispatch) => {
-    try {
-        localStorage.removeItem('firstLogin')
-        await postDataAPI('logout')
-        window.location.href = "/"
-    } catch (err) {
-        dispatch({
-            type: GLOBALTYPES.ALERT,
-            payload: {
-                error: err.response.data.msg
-            }
-        })
-    }
+    getCurrentUser() {
+        return localStorage.getItem('userTicket');
+    },
 }
