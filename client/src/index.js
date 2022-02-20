@@ -9,6 +9,8 @@ import Home from './Screens/Home';
 // import UserView from './Components/Responding/UserView';
 // import RadioCheck from './Components/Responding/RadioCheck';
 
+import DataProvider from './Redux/store';
+
 function Main() {
   return (<Router>
     <Switch>
@@ -21,4 +23,6 @@ function Main() {
   </Router>);
 }
 
-ReactDOM.render(<Main />, document.getElementById('root'));
+ReactDOM.render(<DataProvider>
+  <Main />
+</DataProvider>, document.getElementById('root'));

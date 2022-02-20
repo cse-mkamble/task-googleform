@@ -1,5 +1,8 @@
+import { useSelector } from 'react-redux';
 import Dashboard from "../Dashboard";
+import LandingPage from "../LandingPage";
 
 export default function Home() {
-    return (<Dashboard />);
+    const { auth } = useSelector(state => state);
+    return (auth.token ? <Dashboard /> : <LandingPage />);
 }
