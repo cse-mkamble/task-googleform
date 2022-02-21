@@ -7,6 +7,8 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 
+import Forms from '../../Components/Form/Forms';
+
 import { logout } from '../../Redux/actions/authAction';
 import formService from '../../Redux/actions/formAction';
 
@@ -126,7 +128,7 @@ export default function Dashboard() {
         var data = {
             name: formTitle,
             description: formDescription,
-            createdBy: user.id
+            createdBy: user._id
         }
         if (data.name !== "") {
             formService.createForm(data)
@@ -229,7 +231,7 @@ export default function Dashboard() {
             </div>
             <div style={{ marginTop: "10px" }}>
 
-                {/* <Forms userId={user.id} /> */}
+                <Forms userId={user._id} />
             </div>
         </div>
     </Box>);

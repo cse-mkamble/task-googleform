@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { Tabs, Tab, Box, AppBar, Toolbar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, IconButton, Paper, Typography, Grid } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -9,8 +8,8 @@ import FilterNoneIcon from '@mui/icons-material/FilterNone';
 import CloseIcon from '@mui/icons-material/Close';
 import ViewListIcon from '@mui/icons-material/ViewList';
 
-import QuestionsTab from '../../Components/Form/QuestionsTab';
-import ResponseTab from '../../Components/Response/ResponseTab';
+import QuestionsTab from './QuestionsTab';
+import ResponseTab from '../Response/ResponseTab';
 import formService from '../../Redux/actions/formAction';
 
 const useStyles = makeStyles((theme) => ({
@@ -42,11 +41,10 @@ const useStyles = makeStyles((theme) => ({
 
 const EditForm = (props) => {
   const classes = useStyles();
-  const { formId } = useParams();
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = React.useState({})
-  const [formID, setFormID] = React.useState('');
+  const [formID, setFormID] = React.useState(props.formId);
 
 
   const [formDeatils, setFormDetails] = React.useState({});
@@ -93,8 +91,7 @@ const EditForm = (props) => {
 
 
   React.useEffect(() => {
-    setFormID(formId);
-    formService.getForm(formId).then((data) => {
+    formService.getForm(props.formId).then((data) => {
       setFormDetails(data);
     },
       error => {

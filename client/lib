@@ -9,7 +9,6 @@ npm install @mui/icons-material
 npm install --save @material-ui/core
 
 npm install --save axios
-
-npm install moment
-
+npm install --save react-moment
 npm install --save prop-types
+npm install --save react-beautiful-dnd
