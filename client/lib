@@ -11,3 +11,5 @@ npm install --save @material-ui/core
 npm install --save axios
 
 npm install moment
+
+npm install --save prop-types
