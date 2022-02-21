@@ -9,6 +9,7 @@ import PrivateRoute from './HOC/PrivateRoute';
 import Home from './Screens/Home';
 import Login from './Screens/Login';
 import EditForm from './Screens/EditForm';
+import UserView from './Components/Responding/UserView';
 
 import { refreshToken } from './Redux/actions/authAction';
 import DataProvider from './Redux/store';
@@ -26,8 +27,7 @@ function Application() {
       <Route exact path="/" component={Home} />
       <Route exact path="/login" component={Login} />
       <PrivateRoute path="/form/:formId" component={EditForm} />
-      {/* <Route exact path="/s/:formId" component={UserView} /> */}
-      {/* <Route exact path="/fuck" component={RadioCheck} /> */}
+      <Route exact path="/s/:formId" component={UserView} />
     </Switch>
   </Router>);
 }
