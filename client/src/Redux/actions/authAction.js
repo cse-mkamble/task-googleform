@@ -1,72 +1,66 @@
-import axios from 'axios';
-const API_URL = "http://localhost:5000/api/user";
+import { GLOBALTYPES } from './globalTypes';
+import { postDataAPI } from '../../Utils/fetchData';
 
-export default {
-    isAuthenticated() {
-        const token = localStorage.getItem('userTicket')
-        if (token) {
-            return true
+export const login = (res, fromPathname) => async (dispatch) => {
+    var data = { name: res.name, email: res.email, image: res.imageUrl }
+    try {
+        const res = await postDataAPI('login', data)
+        dispatch({ type: GLOBALTYPES.AUTH, payload: { token: res.data.access_token, user: res.data.user } })
+        localStorage.setItem("firstLogin", true);
+        if (fromPathname == "/login") {
+            window.location.href = "/";
         } else {
-            return false
+            window.location.href = fromPathname;
         }
-    },
+    } catch (err) {
 
-    getGuestUser() {
-        return { name: "Guest 123", userId: "guest123", email: "coolboy69@gg.com" }
-    },
+    }
+}
 
-    authenticate(cb) {
-        this.isAuthenticated = true;
-        setTimeout(cb, 100); // fake async
-    },
+export const refreshToken = () => async (dispatch) => {
+    const firstLogin = localStorage.getItem("firstLogin")
+    if (firstLogin) {
+        try {
+            const res = await postDataAPI('refresh_token')
+            dispatch({ type: GLOBALTYPES.AUTH, payload: { token: res.data.access_token, user: res.data.user } })
+        } catch (err) {
 
-    signout(cb) {
-        this.isAuthenticated = false;
-        setTimeout(cb, 100);
-    },
-
-    loginWithGoogle(res) {
-        var data = {
-            name: res.name,
-            email: res.email,
-            image: res.imageUrl
         }
+    }
+}
 
-        return axios
-            .post(`${API_URL}/login`, data)
-            .then(response => {
-                console.log(response.data);
-                if (response.data.accessToken) {
-                    localStorage.setItem("userTicket", JSON.stringify(response.data.accessToken));
-                }
-                return response.data;
-            });
-    },
-
-    loginAsGuest() {
-        var userData = {
-            name: "Cool Guest",
-            id: "y2jsdqakq9rqyvtd4gf6g",
-            email: "coolboy69@gg.com"
-        }
-
-        return axios
-            .post(`${API_URL}/login`, userData)
-            .then(response => {
-                console.log(response.data);
-                if (response.data.accessToken) {
-                    localStorage.setItem("userTicket", JSON.stringify(response.data.accessToken));
-                }
-                return response.data;
-            });
-    },
+export const isAuthenticated = () => {
+    const token = localStorage.getItem('firstLogin');
+    if (token) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 
-    logout() {
-        localStorage.removeItem("userTicket");
-    },
+export const loginAsGuest = () => async (dispatch) => {
+    var userData = {
+        name: "Cool Guest",
+        id: "y2jsdqakq9rqyvtd4gf6g",
+        email: "coolboy69@gg.com"
+    }
+    try {
+        const res = await postDataAPI('login', userData)
+        dispatch({ type: GLOBALTYPES.AUTH, payload: { token: res.data.access_token, user: res.data.user } })
+        localStorage.setItem("firstLogin", true);
+        window.location.href = "/";
+    } catch (err) {
 
-    getCurrentUser() {
-        return localStorage.getItem('userTicket');
-    },
+    }
+}
+
+
+export const logout = () => async (dispatch) => {
+    try {
+        localStorage.removeItem('firstLogin')
+        await postDataAPI('logout');
+    } catch (err) {
+
+    }
 }

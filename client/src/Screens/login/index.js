@@ -1,21 +1,11 @@
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core';
-import {
-    Box,
-    AppBar,
-    Button,
-    CssBaseline,
-    Grid,
-    TextField,
-    Toolbar,
-    Typography,
-    Avatar
-} from '@mui/material';
+import { Box, AppBar, Button, CssBaseline, Grid, TextField, Toolbar, Typography, Avatar } from '@mui/material';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
 
-
-import authAction from '../../Redux/actions/authAction';
+import { login, isAuthenticated, logout, loginAsGuest } from '../../Redux/actions/authAction';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -34,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login(props) {
     const classes = useStyles();
+    const { auth } = useSelector(state => state);
+    const dispatch = useDispatch();
     let history = useHistory();
     const [isLogined, setIsLogined] = useState(false);
     const { from } = props.location.state || { from: { pathname: '/' } }
@@ -43,27 +35,8 @@ export default function Login(props) {
     const { name, email } = userData;
 
     useEffect(() => {
-        setIsLogined(authAction.isAuthenticated())
+        setIsLogined(isAuthenticated());
     }, []);
-
-    const loginAsGuest = () => {
-        authAction.loginAsGuest()
-        history.push(from.pathname);
-    }
-
-
-    const handleLoginFailure = (response) => {
-        console.log('Failed to log in');
-    }
-
-    const handleLogoutFailure = (response) => {
-        console.log('Failed to log out');
-    }
-
-    const logout = (response) => {
-        authAction.logout();
-        setIsLogined(false);
-    }
 
 
     const handleChangeInput = e => {
@@ -73,26 +46,16 @@ export default function Login(props) {
 
     const handleSubmitLogin = (e) => {
         e.preventDefault();
-        authAction.loginWithGoogle(userData)
-            .then(() => {
-                console.log(from.pathname);
+        dispatch(login(userData, from.pathname));
+    }
 
-                if (from.pathname == "/login") {
-                    history.push("/");
-                } else {
-                    history.push(from.pathname);
-                }
-            },
-                error => {
-                    const resMessage =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.message) ||
-                        error.message ||
-                        error.toString();
-                    console.log(resMessage);
-                }
-            );
+    const handleLoginAsGuest = () => {
+        dispatch(loginAsGuest());
+    }
+
+    const handleLogout = (response) => {
+        dispatch(logout());
+        setIsLogined(false);
     }
 
     return (<div>
@@ -154,9 +117,12 @@ export default function Login(props) {
                 <div style={{ textAlign: 'center' }} >
                     {isLogined ? (<div>
                         <p>Already logged in. Want to logout?</p>
-                        <button onClick={logout}>Logout </button>
+                        <Button
+                            variant="contained"
+                            style={{ textTransform: "none" }}
+                            onClick={handleLogout}>Logout </Button>
                     </div>) : (<Button
-                        onClick={loginAsGuest}
+                        onClick={handleLoginAsGuest}
                         variant="contained"
                         style={{ textTransform: "none" }}
                         startIcon={<Avatar src={"https://static.thenounproject.com/png/3244607-200.png"} />} >

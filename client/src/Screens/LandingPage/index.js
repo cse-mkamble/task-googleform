@@ -86,6 +86,5 @@ export default function LandingPage() {
                 </Container>
             </div>
         </main>
-
     </div>);
 }

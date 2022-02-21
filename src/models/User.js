@@ -4,9 +4,9 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 var UserSchema = new mongoose.Schema({
   name: String,
   email: String,
-  image: {type: String},
+  image: { type: String },
   createdForms: []
- }, {timestamps: true});
+}, { timestamps: true });
 
 UserSchema.plugin(mongoosePaginate);
 User = mongoose.model('User', UserSchema, 'Users');

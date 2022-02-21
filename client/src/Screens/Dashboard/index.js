@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import { Box, AppBar, Toolbar, IconButton, Typography, InputBase, MenuItem, Menu, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, TextField } from '@mui/material';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import authAction from '../../Redux/actions/authAction';
+
+import { logout } from '../../Redux/actions/authAction';
 
 const Title = styled(Typography)(({ theme }) => ({
     display: 'none',
@@ -29,6 +31,8 @@ const SectionMobile = styled(Box)(({ theme }) => ({
 }));
 
 export default function Dashboard() {
+    const { auth } = useSelector(state => state);
+    const dispatch = useDispatch();
     let history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
@@ -40,7 +44,7 @@ export default function Dashboard() {
     const [user, setUser] = useState({})
 
     useEffect(() => {
-        // setUser(auth.getCurrentUser());
+        setUser(auth.user);
     }, []);
 
     const handleClickOpen = () => {
@@ -66,7 +70,6 @@ export default function Dashboard() {
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
-
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
@@ -144,10 +147,10 @@ export default function Dashboard() {
         }
     }
 
-    const logout = () => {
+    const handleLogout = () => {
         var logoutConfirmation = window.confirm("Really want to logout?");
         if (logoutConfirmation) {
-            authAction.logout();
+            dispatch(logout());
             history.push("/login");
         }
     }
@@ -167,7 +170,7 @@ export default function Dashboard() {
                         edge="end"
                         aria-label="account of current user"
                         color="inherit"
-                        onClick={logout}
+                        onClick={handleLogout}
                     ><AccountCircleRoundedIcon /></IconButton>
                 </SectionDesktop>
                 <SectionMobile>
@@ -203,7 +206,6 @@ export default function Dashboard() {
                         />
                         <br></br>
                         <TextField
-                            autoFocus
                             margin="dense"
                             id="description"
                             label="Form description"
